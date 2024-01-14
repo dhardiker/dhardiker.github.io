@@ -3,6 +3,7 @@ import * as Root from './routes/Root';
 import * as Index from './routes/Index';
 import * as ScanCode from './routes/ScanCode';
 import * as DisplayCode from './routes/DisplayCode';
+import * as Leaderboard from './routes/Leaderboard';
 import ErrorPage from './components/ErrorPage';
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import './App.css';
@@ -25,6 +26,10 @@ const router = () => createBrowserRouter(
         <Route
           path="display-code"
           element={<DisplayCode.Element />}
+        />
+        <Route
+          path="leaderboard"
+          element={<Leaderboard.Element />}
         />
       </Route>
     </Route>

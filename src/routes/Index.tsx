@@ -28,6 +28,13 @@ export const Element: React.FC = () => {
         >
           Scan QR Code
         </Button>
+        <Button
+          variant="contained"
+          sx={{ marginTop: 1 }}
+          onClick={() => navigate('/leaderboard')}
+        >
+          Leaderboard
+        </Button>
       </Box>
     </Container>
   </>
