@@ -28,9 +28,6 @@ export const Element: React.FC = () => {
             navigate('/display-code', { state: { code } })
           }}
           onError={error => {
-            // We get this error message after capturing a code
-            if (error?.message.startsWith("Failed to execute 'getImageData' on 'CanvasRenderingContext2D':")) return
-            // We should report all other errors
             console.error(error?.message)
             throw error
           }}
