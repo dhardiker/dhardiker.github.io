@@ -6,8 +6,8 @@ export const parseCode = (code: string) => {
   }
   
   const [ payload, hash ] = code.split('§')
-  const [ gameID, gamerName, gameRunTimeAsString, gameRunDurationAsString, gameRunScoreAsString ] = payload.split('|')
-  const gameRunTime = parseInt(gameRunTimeAsString, 10)
+  const [ gameID, badgeID, gameCurrentTimeAsString, gameRunDurationAsString, gameRunScoreAsString ] = payload.split('|')
+  const gameCurrentTime = parseInt(gameCurrentTimeAsString, 10)
   const gameRunDuration = parseInt(gameRunDurationAsString, 10)
   const gameRunScore = parseInt(gameRunScoreAsString, 10)
 
@@ -15,8 +15,8 @@ export const parseCode = (code: string) => {
 
   return {
     gameID,
-    gamerName,
-    gameRunTime,
+    badgeID,
+    gameCurrentTime,
     gameRunDuration,
     gameRunScore,
   }

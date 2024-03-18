@@ -4,20 +4,21 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { parseCode } from "../utils/code"
 
-const zState = z.object({
-  code: z.string(),
-})
-
 export const Element: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const state = zState.parse(location.state)
-  const parsedCode = parseCode(state.code)
+  const decodedSearch = decodeURIComponent(location.search)
+  const code = decodedSearch.startsWith('?')
+    ? decodedSearch.slice(1)
+    : decodedSearch
+  
+  console.log('code:', code)
+  const parsedCode = parseCode(code)
 
   return <>
     <Helmet>
-      <title>Display QR Code Details</title>
+      <title>Display QR Code Score</title>
     </Helmet>
     <Container component="main">
       <Box
@@ -29,10 +30,10 @@ export const Element: React.FC = () => {
         }}
       >
         <Typography component="h1" variant="h5" marginBottom={3}>
-          Display QR Code Details
+          Display QR Code Score
         </Typography>
         <Typography component="p" variant="body1" color={"GrayText"} marginBottom={3}>
-          <em>{state.code}</em>
+          <em>{code}</em>
         </Typography>
         <Typography component="p" variant="body1" marginBottom={3}>
           <strong>Game ID: </strong>

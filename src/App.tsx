@@ -2,6 +2,7 @@ import React from 'react';
 import * as Root from './routes/Root';
 import * as Index from './routes/Index';
 import * as ScanCode from './routes/ScanCode';
+import * as Score from './routes/Score';
 import * as DisplayCode from './routes/DisplayCode';
 import * as Leaderboard from './routes/Leaderboard';
 import ErrorPage from './components/ErrorPage';
@@ -18,6 +19,10 @@ const router = () => createBrowserRouter(
         <Route
           index
           element={<Index.Element />}
+        />
+        <Route
+          path="score"
+          element={<Score.Element />}
         />
         <Route
           path="scan-code"
