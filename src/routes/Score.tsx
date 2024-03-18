@@ -1,7 +1,6 @@
 import { Box, Button, Container, Typography } from "@mui/material"
 import { Helmet } from "react-helmet-async"
 import { useLocation, useNavigate } from "react-router-dom"
-import { z } from "zod"
 import { parseCode } from "../utils/code"
 
 export const Element: React.FC = () => {
@@ -55,6 +54,13 @@ export const Element: React.FC = () => {
           <strong>Game Run Score: </strong>
           {parsedCode.gameRunScore}
         </Typography>
+        <Button
+          variant="contained"
+          sx={{ marginTop: 1 }}
+          onClick={() => navigate('/scan-badge', { state: { code } })}
+        >
+          Scan Attendee Badge
+        </Button>
         <Button
           variant="contained"
           sx={{ marginTop: 1 }}

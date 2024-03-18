@@ -6,6 +6,7 @@ import { parseCode } from "../utils/code"
 
 const zState = z.object({
   code: z.string(),
+  badge: z.string(),
 })
 
 export const Element: React.FC = () => {
@@ -41,6 +42,10 @@ export const Element: React.FC = () => {
         <Typography component="p" variant="body1" marginBottom={3}>
           <strong>Badge ID Prefix: </strong>
           {parsedCode.badgeID}
+        </Typography>
+        <Typography component="p" variant="body1" marginBottom={3}>
+          <strong>Full Badge ID: </strong>
+          {state.badge} {state.badge.startsWith(parsedCode.badgeID) ? '✅' : '❌'}
         </Typography>
         <Typography component="p" variant="body1" marginBottom={3}>
           <strong>Game Current Time: </strong>

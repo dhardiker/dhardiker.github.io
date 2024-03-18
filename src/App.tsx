@@ -1,9 +1,9 @@
 import React from 'react';
 import * as Root from './routes/Root';
 import * as Index from './routes/Index';
-import * as ScanCode from './routes/ScanCode';
+import * as ScanBadge from './routes/ScanBadge';
+import * as Submit from './routes/Submit';
 import * as Score from './routes/Score';
-import * as DisplayCode from './routes/DisplayCode';
 import * as Leaderboard from './routes/Leaderboard';
 import ErrorPage from './components/ErrorPage';
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
@@ -25,12 +25,12 @@ const router = () => createBrowserRouter(
           element={<Score.Element />}
         />
         <Route
-          path="scan-code"
-          element={<ScanCode.Element />}
+          path="scan-badge"
+          element={<ScanBadge.Element />}
         />
         <Route
-          path="display-code"
-          element={<DisplayCode.Element />}
+          path="submit"
+          element={<Submit.Element />}
         />
         <Route
           path="leaderboard"
