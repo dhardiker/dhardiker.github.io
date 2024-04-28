@@ -9,6 +9,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { CssBaseline } from '@mui/material';
 import { HelmetProvider } from 'react-helmet-async';
+import InitApiClient from './bootstrapping/InitApiClient';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -17,7 +18,9 @@ root.render(
   <React.StrictMode>
     <CssBaseline />
     <HelmetProvider>
-      <App />
+      <InitApiClient>
+        <App />
+      </InitApiClient>
     </HelmetProvider>
   </React.StrictMode>
 );

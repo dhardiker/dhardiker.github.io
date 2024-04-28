@@ -8,6 +8,9 @@ import * as Leaderboard from './routes/Leaderboard';
 import ErrorPage from './components/ErrorPage';
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import './App.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient()
 
 const router = () => createBrowserRouter(
   createRoutesFromElements(
@@ -43,7 +46,11 @@ const router = () => createBrowserRouter(
 
 function App() {
   console.log("[App] Loaded!")
-  return <RouterProvider router={router()} />
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router()} />
+    </QueryClientProvider>
+  )
 }
 
 export default App;

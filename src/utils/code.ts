@@ -1,3 +1,11 @@
+export const i18nGameNames: Record<string, string> = {
+  'duker': 'Duker',
+  'boing': 'Boing',
+  'space': 'Space Invaders',
+  'pacman': 'Pac-Man',
+  'runner': 'Tempest Run',
+}
+
 export const parseCode = (code: string) => {
   // Check we match something like: `gameID|gamerName|gameRunTime|gameRunDuration|gameRunScore§hash`
   if (!code.match(/^\w+\|\w+\|\d+\|\d+\|\d+§[-A-Za-z0-9+/=]+$/)) {

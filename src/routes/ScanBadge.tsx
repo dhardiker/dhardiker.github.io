@@ -46,7 +46,7 @@ export const Element: React.FC = () => {
         <Button
           variant="contained"
           sx={{ marginTop: 1 }}
-          onClick={() => navigate('/')}
+          onClick={() => navigate(-1)}
         >
           Cancel Scan
         </Button>
