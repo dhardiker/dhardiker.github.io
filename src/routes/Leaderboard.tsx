@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography'
 import { Helmet } from "react-helmet-async"
 import { useNavigate } from "react-router-dom"
 import { apiClientHooks } from '../bootstrapping/InitApiClient'
-import { Paper, Skeleton } from '@mui/material'
+import { Paper, Skeleton, keyframes, styled } from '@mui/material'
 
 const SkeletonListItem: React.FC = () => (
   <ListItem alignItems="flex-start">
@@ -22,12 +22,13 @@ const SkeletonListItem: React.FC = () => (
 )
 
 type ScoreListItemProps = {
+  index: number,
   name: string,
   score: number,
-  gamesPlayed?: number,
-}
-const ScoreListItem: React.FC<ScoreListItemProps> = ({ name, score, gamesPlayed }) =>
-  <ListItem alignItems="flex-start">
+  gamesPlayed?: number,  
+} & React.ComponentProps<typeof ListItem>
+const ScoreListItem: React.FC<ScoreListItemProps> = ({ name, score, gamesPlayed, ...listItemProps }) =>
+  <ListItem alignItems="flex-start" {...listItemProps}>
     <ListItemAvatar sx={{ marginRight: 2 }}>
       <Avatar name={name} round={true} size='6vh' />
     </ListItemAvatar>
@@ -59,6 +60,31 @@ const ScoreListItem: React.FC<ScoreListItemProps> = ({ name, score, gamesPlayed 
       }
     />
   </ListItem>
+
+const fadeInMoveUp = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(1000px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const AnimatedScoreListItem: React.FC<ScoreListItemProps> = ({ index, ...props }) => (
+  <Box
+    component={ScoreListItem}
+    sx={{
+      opacity: 0,
+      transform: 'translateY(20px)',
+      animation: `${fadeInMoveUp} 0.5s forwards`,
+      animationDelay: `${index * 0.1}s`,
+    }}
+    index={index}
+    {...props}
+  />
+);
 
 const ensureArrayHasExactLength = <T extends unknown>(arr: T[] | undefined, length: number, fill: T): T[] => {
   if (arr === undefined) return Array(length).fill(fill)
@@ -120,6 +146,7 @@ export const Element: React.FC = () => {
               alignItems: 'top',
               justifyContent: 'center',
               width: '45vh',
+              overflow: 'hidden',
             }}>
 
               <List sx={{ width: '100%', maxWidth: '35vh' }}>
@@ -127,7 +154,12 @@ export const Element: React.FC = () => {
                 {highscores.map((entry, index) => (
                   // TODO: Add a player key to the leaderboard API
                   // TODO: Add gamesPlayed to the leaderboard API
-                  <ScoreListItem key={index} name={entry.name} score={entry.highscore} />
+                  <AnimatedScoreListItem
+                    key={index}
+                    index={index}
+                    name={entry.name}
+                    score={entry.highscore}
+                  />
                 ))}
               </List>
 
