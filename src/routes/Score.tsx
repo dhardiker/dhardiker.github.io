@@ -1,7 +1,7 @@
 import { Box, Button, Container, Typography } from "@mui/material"
 import { Helmet } from "react-helmet-async"
 import { useLocation, useNavigate } from "react-router-dom"
-import { i18nGameNames, parseCode } from "../utils/code"
+import { getGameName, parseCode } from "../utils/code"
 
 const DebugCode = ({ code, parsedCode }: { code: string, parsedCode: ReturnType<typeof parseCode> }) => {
   return <>
@@ -63,7 +63,7 @@ export const Element: React.FC = () => {
         </Typography>
         <Typography component="h3" variant="h5" marginBottom={3}>
           You scored <strong>{parsedCode.gameRunScore.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> points
-          in the game <strong>{i18nGameNames[parsedCode.gameID] ?? parsedCode.gameID}</strong> for
+          in the game <strong>{getGameName(parsedCode.gameID) ?? parsedCode.gameID}</strong> for
           the badge ID starting <strong>{parsedCode.badgeID.toUpperCase()}</strong>.
         </Typography>
         <Button

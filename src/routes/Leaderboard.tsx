@@ -8,24 +8,16 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from 'react-avatar';
 import Typography from '@mui/material/Typography'
 import { Helmet } from "react-helmet-async"
-import { useNavigate } from "react-router-dom"
 import { apiClientHooks } from '../bootstrapping/InitApiClient'
-import { Paper, Skeleton, keyframes, styled } from '@mui/material'
-
-const SkeletonListItem: React.FC = () => (
-  <ListItem alignItems="flex-start">
-    <ListItemAvatar>
-      <Avatar color='grey' round={true} size='42px' />
-    </ListItemAvatar>
-    <Skeleton variant="rectangular" width={210} height={60} />
-  </ListItem>
-)
+import { Paper, keyframes } from '@mui/material'
+import { gameIDs, i18nGameNames } from '../utils/code'
+import { Duration, DurationObjectUnits } from 'luxon'
 
 type ScoreListItemProps = {
   index: number,
   name: string,
   score: number,
-  gamesPlayed?: number,  
+  gamesPlayed?: number,
 } & React.ComponentProps<typeof ListItem>
 const ScoreListItem: React.FC<ScoreListItemProps> = ({ name, score, gamesPlayed, ...listItemProps }) =>
   <ListItem alignItems="flex-start" {...listItemProps}>
@@ -33,7 +25,6 @@ const ScoreListItem: React.FC<ScoreListItemProps> = ({ name, score, gamesPlayed,
       <Avatar name={name} round={true} size='6vh' />
     </ListItemAvatar>
     <ListItemText
-      // sx={{ color: 'white', fontSize: '5rem' }}
       primary={
         <Typography
           sx={{ display: 'inline' }}
@@ -86,6 +77,60 @@ const AnimatedScoreListItem: React.FC<ScoreListItemProps> = ({ index, ...props }
   />
 );
 
+type ScoreListProps = {
+  title: string,
+  maxScoreCount: number,
+  highscores: {
+    name: string;
+    highscore: number;
+    rank: number;
+  }[],
+} & React.ComponentProps<typeof Box>
+const ScoreList: React.FC<ScoreListProps> = ({ title, maxScoreCount, highscores, ...boxProps }) =>
+  <Box
+    sx={{
+      position: 'relative',
+      flex: 1,
+      m: 1,
+      ...((boxProps ?? {}).sx)
+    }}
+  >
+    <Typography variant="h4" sx={{
+      fontWeight: 'bold',
+      color: 'white',
+      position: 'absolute',
+      top: '-4.5vh',
+      left: '1vh',
+      zIndex: 'tooltip'
+    }}>
+      {title}
+    </Typography>
+    <Paper elevation={6} sx={{
+      bgcolor: 'black',
+      height: `${9 * maxScoreCount}vh`,
+      border: '0.25vh solid limegreen',
+      borderRadius: '2vh',
+      display: 'flex',
+      alignItems: 'top',
+      justifyContent: 'center',
+      width: '45vh',
+      overflow: 'hidden',
+    }}>
+      <List sx={{ width: '100%', maxWidth: '35vh' }}>
+        {highscores.map((entry, index) => (
+          // TODO: Add a player key to the leaderboard API
+          // TODO: Add gamesPlayed to the leaderboard API
+          <AnimatedScoreListItem
+            key={title + ':' + index}
+            index={index}
+            name={entry.name}
+            score={entry.highscore}
+          />
+        ))}
+      </List>
+    </Paper>
+  </Box>
+
 const ensureArrayHasExactLength = <T extends unknown>(arr: T[] | undefined, length: number, fill: T): T[] => {
   if (arr === undefined) return Array(length).fill(fill)
   if (arr.length === length) return arr
@@ -93,14 +138,76 @@ const ensureArrayHasExactLength = <T extends unknown>(arr: T[] | undefined, leng
   return [...arr, ...Array(length - arr.length).fill(fill)]
 }
 
+type GameCarrouselProps = {
+  waitTime: DurationObjectUnits,
+}
+const useGameCarrousel = ({ waitTime }: GameCarrouselProps) => {
+  const [currentGame, setCurrentGame] = React.useState<keyof typeof i18nGameNames>('duker')
+
+  // Wait before switching to the next game
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      const gameIndex = gameIDs.indexOf(currentGame)
+      const nextGameIndex = (gameIndex + 1) % Object.keys(i18nGameNames).length
+      setCurrentGame(gameIDs[nextGameIndex])
+    }, Duration.fromObject(waitTime).as('milliseconds'))
+
+    return () => clearTimeout(timer)
+  }, [currentGame, waitTime])
+
+  return currentGame
+}
+
 export const Element: React.FC = () => {
-  const navigate = useNavigate()
+  const currentGameId = useGameCarrousel({ waitTime: { seconds: 5 } })
 
   const leaderboard = apiClientHooks.useGetPublicLeaderboard()
   if (process.env.NODE_ENV === 'development') console.log('leaderboard:', leaderboard)
 
-  const scoreCount = 5
-  const highscores = ensureArrayHasExactLength(leaderboard.data?.highscores, scoreCount, { name: 'Realsdoginoinsodign Long----', highscore: 0, rank: 0 })
+  // const gameLeaderboard = apiClientHooks.useGetGameLeaderboard({ game: currentGameId })
+  // if (process.env.NODE_ENV === 'development') console.log('gameLeaderboard:', gameLeaderboard)
+
+  const mockHighscores: Record<typeof currentGameId, typeof highscores> = {
+    'duker': [
+      { name: 'Alice', highscore: 1000, rank: 1 },
+      { name: 'Bob', highscore: 900, rank: 2 },
+      { name: 'Charlie', highscore: 800, rank: 3 },
+      { name: 'David', highscore: 700, rank: 4 },
+      { name: 'Eve', highscore: 600, rank: 5 },
+    ],
+    'space': [
+      { name: 'Frank', highscore: 500, rank: 1 },
+      { name: 'Grace', highscore: 400, rank: 2 },
+      { name: 'Heidi', highscore: 300, rank: 3 },
+      { name: 'Ivan', highscore: 200, rank: 4 },
+      { name: 'Judy', highscore: 100, rank: 5 },
+    ],
+    'boing': [
+      { name: 'Kevin', highscore: 50, rank: 1 },
+      { name: 'Linda', highscore: 40, rank: 2 },
+      { name: 'Mike', highscore: 30, rank: 3 },
+      { name: 'Nancy', highscore: 20, rank: 4 },
+      { name: 'Oscar', highscore: 10, rank: 5 },
+    ],
+    'pacman': [
+      { name: 'Peter', highscore: 5, rank: 1 },
+      { name: 'Quinn', highscore: 4, rank: 2 },
+      { name: 'Rose', highscore: 3, rank: 3 },
+      { name: 'Steve', highscore: 2, rank: 4 },
+      { name: 'Tina', highscore: 1, rank: 5 },
+    ],
+    'runner': [
+      { name: 'Ursula', highscore: 0, rank: 1 },
+      { name: 'Victor', highscore: 0, rank: 2 },
+      { name: 'Wendy', highscore: 0, rank: 3 },
+      { name: 'Xavier', highscore: 0, rank: 4 },
+      { name: 'Yvonne', highscore: 0, rank: 5 },
+    ],
+  }
+
+  const maxScoreCount = 5
+  const highscores = ensureArrayHasExactLength(leaderboard.data?.highscores, 5, { name: 'Generated Player', highscore: 0, rank: 0 })
+  const gameHighscores: typeof highscores = mockHighscores[currentGameId]
 
   return <>
     <Helmet>
@@ -123,72 +230,20 @@ export const Element: React.FC = () => {
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-around',
-          width: '80%',
-          maxWidth: '80vh'
+          width: '100vh', // this is bit weird, but works due to other hacks
         }}>
-          <Box sx={{ position: 'relative', flex: 1, m: 1, marginTop: 8, marginRight: 3 }}>
-            <Typography variant="h4" sx={{
-              fontWeight: 'bold',
-              color: 'white',
-              position: 'absolute',
-              top: '-4.5vh', // Adjust this value as needed
-              left: '1vh', // Adjust for alignment
-              zIndex: 'tooltip'
-            }}>
-              Overall Standings
-            </Typography>
-            <Paper elevation={6} sx={{
-              bgcolor: 'black',
-              height: `${9 * scoreCount}vh`, // Adjust as per content
-              border: '0.25vh solid limegreen',
-              borderRadius: '2vh',
-              display: 'flex',
-              alignItems: 'top',
-              justifyContent: 'center',
-              width: '45vh',
-              overflow: 'hidden',
-            }}>
-
-              <List sx={{ width: '100%', maxWidth: '35vh' }}>
-                {leaderboard.isLoading && <SkeletonListItem />}
-                {highscores.map((entry, index) => (
-                  // TODO: Add a player key to the leaderboard API
-                  // TODO: Add gamesPlayed to the leaderboard API
-                  <AnimatedScoreListItem
-                    key={index}
-                    index={index}
-                    name={entry.name}
-                    score={entry.highscore}
-                  />
-                ))}
-              </List>
-
-            </Paper>
-          </Box>
-          <Box sx={{ position: 'relative', flex: 1, m: 1, marginTop: 8 }}>
-            <Typography variant="h4" sx={{
-              fontWeight: 'bold',
-              color: 'white',
-              position: 'absolute',
-              top: '-4.5vh', // Adjust this value as needed
-              left: '1vh', // Adjust for alignment
-              zIndex: 'tooltip'
-            }}>
-              Game Name
-            </Typography>
-            <Paper elevation={6} sx={{
-              bgcolor: 'black',
-              height: `${9 * scoreCount}vh`, // Adjust as per content
-              border: '0.25vh solid limegreen',
-              borderRadius: '2vh',
-              display: 'flex',
-              alignItems: 'top',
-              justifyContent: 'center',
-              width: '45vh',
-            }}>
-              {/* Replace with dynamic content */}
-            </Paper>
-          </Box>
+          <ScoreList
+            sx={{ marginTop: 8 }}
+            title="Overall Standings"
+            maxScoreCount={maxScoreCount}
+            highscores={highscores}
+          />
+          <ScoreList
+            sx={{ marginTop: 8 }}
+            title={i18nGameNames[currentGameId]}
+            maxScoreCount={maxScoreCount}
+            highscores={gameHighscores}
+          />
         </Box>
       </Box>
     </Container>

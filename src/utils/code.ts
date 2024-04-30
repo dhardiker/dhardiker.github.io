@@ -1,10 +1,18 @@
-export const i18nGameNames: Record<string, string> = {
+export const getGameName = (gameID: string) => {
+  // A hack to allow any string to attempt to be looked up from the map
+  // Missing values are returned as the original string
+  return (i18nGameNames as Record<string, string>)[gameID] ?? gameID
+}
+
+export const i18nGameNames = {
   'duker': 'Duker',
   'boing': 'Boing',
   'space': 'Space Invaders',
   'pacman': 'Pac-Man',
   'runner': 'Tempest Run',
-}
+} as const
+
+export const gameIDs = Object.keys(i18nGameNames) as Array<keyof typeof i18nGameNames>
 
 export const parseCode = (code: string) => {
   // Check we match something like: `gameID|gamerName|gameRunTime|gameRunDuration|gameRunScore§hash`
