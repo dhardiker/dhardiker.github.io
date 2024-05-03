@@ -51,6 +51,14 @@ const endpoints = makeApi([
     response: PublicLeaderboard,
   },
   {
+    method: "get",
+    path: "/leaderboard/:gameId",
+    alias: "getPublicLeaderboardForGame",
+    description: `Get the leaderboard for a game`,
+    requestFormat: "json",
+    response: PublicLeaderboard,
+  },
+  {
     method: "post",
     path: "/score",
     alias: "submitScore",

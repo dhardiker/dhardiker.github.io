@@ -1,5 +1,6 @@
 import { Outlet, useNavigation } from "react-router-dom"
 import { Box, CircularProgress, Container } from "@mui/material";
+import Devtools from "../components/Devtools";
 
 export const Element: React.FC = () => {
   const navigation = useNavigation()
@@ -23,6 +24,7 @@ export const Element: React.FC = () => {
       : (
         <Outlet />
       )}
+    <Devtools />
   </>
 }
 

@@ -158,56 +158,21 @@ const useGameCarrousel = ({ waitTime }: GameCarrouselProps) => {
   return currentGame
 }
 
+const fiveSeconds = Duration.fromObject({ seconds: 5 }).as('milliseconds')
+const tenSeconds = Duration.fromObject({ seconds: 10 }).as('milliseconds')
+
 export const Element: React.FC = () => {
   const currentGameId = useGameCarrousel({ waitTime: { seconds: 5 } })
 
-  const leaderboard = apiClientHooks.useGetPublicLeaderboard()
+  const leaderboard = apiClientHooks.useGetPublicLeaderboard({}, { staleTime: fiveSeconds, refetchInterval: tenSeconds })
   if (process.env.NODE_ENV === 'development') console.log('leaderboard:', leaderboard)
 
-  // const gameLeaderboard = apiClientHooks.useGetGameLeaderboard({ game: currentGameId })
-  // if (process.env.NODE_ENV === 'development') console.log('gameLeaderboard:', gameLeaderboard)
-
-  const mockHighscores: Record<typeof currentGameId, typeof highscores> = {
-    'duker': [
-      { name: 'Alice', highscore: 1000, rank: 1 },
-      { name: 'Bob', highscore: 900, rank: 2 },
-      { name: 'Charlie', highscore: 800, rank: 3 },
-      { name: 'David', highscore: 700, rank: 4 },
-      { name: 'Eve', highscore: 600, rank: 5 },
-    ],
-    'space': [
-      { name: 'Frank', highscore: 500, rank: 1 },
-      { name: 'Grace', highscore: 400, rank: 2 },
-      { name: 'Heidi', highscore: 300, rank: 3 },
-      { name: 'Ivan', highscore: 200, rank: 4 },
-      { name: 'Judy', highscore: 100, rank: 5 },
-    ],
-    'boing': [
-      { name: 'Kevin', highscore: 50, rank: 1 },
-      { name: 'Linda', highscore: 40, rank: 2 },
-      { name: 'Mike', highscore: 30, rank: 3 },
-      { name: 'Nancy', highscore: 20, rank: 4 },
-      { name: 'Oscar', highscore: 10, rank: 5 },
-    ],
-    'pacman': [
-      { name: 'Peter', highscore: 5, rank: 1 },
-      { name: 'Quinn', highscore: 4, rank: 2 },
-      { name: 'Rose', highscore: 3, rank: 3 },
-      { name: 'Steve', highscore: 2, rank: 4 },
-      { name: 'Tina', highscore: 1, rank: 5 },
-    ],
-    'runner': [
-      { name: 'Ursula', highscore: 0, rank: 1 },
-      { name: 'Victor', highscore: 0, rank: 2 },
-      { name: 'Wendy', highscore: 0, rank: 3 },
-      { name: 'Xavier', highscore: 0, rank: 4 },
-      { name: 'Yvonne', highscore: 0, rank: 5 },
-    ],
-  }
+  const gameLeaderboard = apiClientHooks.useGetPublicLeaderboardForGame({ params: { gameId: currentGameId } }, { staleTime: fiveSeconds })
+  if (process.env.NODE_ENV === 'development') console.log('gameLeaderboard:', gameLeaderboard)
 
   const maxScoreCount = 5
-  const highscores = ensureArrayHasExactLength(leaderboard.data?.highscores, 5, { name: 'Generated Player', highscore: 0, rank: 0 })
-  const gameHighscores: typeof highscores = mockHighscores[currentGameId]
+  const highscores = leaderboard.data?.highscores ?? []
+  const gameHighscores: typeof highscores = gameLeaderboard.data?.highscores ?? []
 
   return <>
     <Helmet>
