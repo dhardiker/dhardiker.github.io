@@ -1,6 +1,6 @@
-import { Box, CircularProgress, Container, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Container, Typography } from "@mui/material"
 import { Helmet } from "react-helmet-async"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { i18nGameNames, parseCode } from "../utils/code"
 import { apiClientHooks } from "../bootstrapping/InitApiClient"
@@ -11,13 +11,20 @@ const zState = z.object({
   badge: z.string(),
 })
 
+const isNotUUID = (uuid: string) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return !uuidRegex.test(uuid)
+}
+
 export const Element: React.FC = () => {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const state = zState.parse(location.state)
   const parsedCode = parseCode(state.code)
 
   const isGameValid = parsedCode.gameID in i18nGameNames
+  const isBadgeNotAttendee = isNotUUID(state.badge)
   const isBadgeValid = state.badge.startsWith(parsedCode.badgeID)
   const isValid = isGameValid && isBadgeValid
 
@@ -53,19 +60,40 @@ export const Element: React.FC = () => {
         }}
       >
         {!isValid
-          ? <>
-            <Typography component="h1" variant="h3" marginBottom={3}>
-              ⚠️ Invalid Score Code!
-            </Typography>
-            <Typography component="p" variant="body1" marginBottom={3}>
-              <strong>Game ID: </strong>
-              {parsedCode.gameID} {isGameValid ? '✅' : '❌'}
-            </Typography>
-            <Typography component="p" variant="body1" marginBottom={3}>
-              <strong>Badge ID: </strong>
-              {state.badge.split('-')[0]} {isBadgeValid ? '✅' : '❌'}
-            </Typography>
-          </>
+          ? isBadgeNotAttendee
+            ? <>
+              <Typography component="h1" variant="h3" marginBottom={3}>
+                ⚠️ Not an Attendee QR!
+              </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                <strong>{state.badge}</strong> doesn't looks like a Devoxx Attendee QR code.
+              </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                <em>Did you scan the wrong side of your badge?</em>
+              </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                <Button
+                  variant="contained"
+                  sx={{ marginTop: 1 }}
+                  onClick={() => navigate('/scan-badge', { state: { code: state.code } })}
+                >
+                  Scan Attendee Badge
+                </Button>
+              </Typography>
+            </>
+            : <>
+              <Typography component="h1" variant="h3" marginBottom={3}>
+                ⚠️ Invalid Score Code!
+              </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                <strong>Game ID: </strong>
+                {parsedCode.gameID} {isGameValid ? '✅' : '❌'}
+              </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                <strong>Badge ID: </strong>
+                {state.badge.split('-')[0]} {isBadgeValid ? '✅' : '❌'}
+              </Typography>
+            </>
           : scoreResult === undefined
             ? <>
               <Typography component="h1" variant="h3" marginBottom={3}>
