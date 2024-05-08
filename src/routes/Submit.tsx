@@ -31,6 +31,17 @@ export const Element: React.FC = () => {
   const mutateSubmitScore = apiClientHooks.useSubmitScore()
   const [scoreResult, setScoreResult] = useState<typeof mutateSubmitScore.data>(undefined)
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+  const [error, setError] = useState<{
+    http: {
+      code?: string,
+      status?: string,
+      message?: string,
+    },
+    app: {
+      type?: string,
+      message?: string,
+    },
+  } | undefined>()
 
   useEffect(() => {
     if (!isValid || isSubmitted) return
@@ -43,7 +54,24 @@ export const Element: React.FC = () => {
       scoreCode: state.code,
     })
       .then(_scoreResult => setScoreResult(_scoreResult))
-      .catch(console.error)
+      .catch(err => {
+        console.error(err)
+        console.info('Failed to submit score!', {
+          reason: err.response?.data?.error,
+        })
+
+        setError({
+          http: {
+            code: err.code,
+            status: err.response?.status,
+            message: err.message,
+          },
+          app: {
+            type: err.response?.data?.error?.type,
+            message: err.response?.data?.error?.message,
+          },
+        })
+      })
   }, [isValid, isSubmitted, mutateSubmitScore, state.badge, state.code])
 
   return <>
@@ -95,11 +123,35 @@ export const Element: React.FC = () => {
               </Typography>
             </>
           : scoreResult === undefined
-            ? <>
-              <Typography component="h1" variant="h3" marginBottom={3}>
-                <CircularProgress /> Saving Score...
-              </Typography>
-            </>
+            ? error === undefined
+              ? <>
+                <Typography component="h1" variant="h3" marginBottom={3}>
+                  <CircularProgress /> Saving Score...
+                </Typography>
+              </>
+              : <>
+                <Typography component="h1" variant="h3" marginBottom={3}>
+                  😢 Error while Saving!
+                </Typography>
+                <Typography component="p" variant="body1" marginBottom={3}>
+                  HTTP returned the error <strong>{error.http.code}</strong> ({error.http.message})
+                </Typography>
+                <Typography component="p" variant="body1" marginBottom={3}>
+                  App returned the error <strong>{error.app.type}</strong> ({error.app.message})
+                </Typography>
+                <Typography component="p" variant="body1" marginBottom={3}>
+                  <em>You can try to submit again by rescanning your attendee badge.</em>
+                </Typography>
+                <Typography component="p" variant="body1" marginBottom={3}>
+                  <Button
+                    variant="contained"
+                    sx={{ marginTop: 1 }}
+                    onClick={() => navigate('/scan-badge', { state: { code: state.code } })}
+                  >
+                    Scan Attendee Badge
+                  </Button>
+                </Typography>
+              </>
             : <>
               <Typography component="h1" variant="h3" marginBottom={3}>
                 ✅ Score Saved Successfully!
