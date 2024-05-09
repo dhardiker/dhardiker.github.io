@@ -156,6 +156,20 @@ export const Element: React.FC = () => {
               <Typography component="h1" variant="h3" marginBottom={3}>
                 ✅ Score Saved Successfully!
               </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                You are <strong>#{scoreResult.newRank}</strong> (you were <strong>#{scoreResult.previousRank}</strong>) in the leaderboard.
+              </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                You are <strong>{scoreResult.pointsBehind}</strong> points behind <strong>#1</strong>.
+              </Typography>
+              <Typography component="p" variant="body1" marginBottom={3}>
+                Your individual game scores are:
+              </Typography>
+              {scoreResult.highscores.map(({ highscore, gameId }) => (
+                <Typography component="p" variant="body1" marginBottom={3} key={gameId}>
+                  <strong>{i18nGameNames[gameId as 'duker']}:</strong> {highscore.toLocaleString(undefined, { maximumFractionDigits: 0 })} points
+                </Typography>
+              ))}
             </>}
 
         {/* <Typography component="p" variant="body1" color={"GrayText"} marginBottom={3}>
