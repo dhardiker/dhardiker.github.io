@@ -190,8 +190,8 @@ export const Element: React.FC = () => {
         color: 'white',
       }}>
         <img src="/arcade-title.png" alt="Arcade Title" style={{ position: 'absolute', top: 0, left: -25, width: '65vw' }} />
-        <img src="/logo-devoxx-white.png" alt="Devoxx" style={{ position: 'absolute', bottom: 60, left: 20, width: '25vw' }} />
-        <img src="/arcade-heads.png" alt="Arcade Heads" style={{ position: 'absolute', bottom: -20, right: 20, width: '25vw' }} />
+        <img src="/logo-devoxx-white.png" alt="Devoxx Logo" style={{ position: 'absolute', bottom: 60, left: 90, width: '25vw' }} />
+        <img src="/theme-devoxx.png" alt="Devoxx Theme" style={{ position: 'absolute', bottom: -20, right: -80, width: '25vw' }} />
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-around',
